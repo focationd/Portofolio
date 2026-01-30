@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Dava Berliano</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        body.landing-active {
+            overflow: hidden;
+        }
+
+        /* Hamburger Button */
+        .menu-toggle {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            z-index: 1000;
+            background: #ffffff;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background: #333;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background: #333333;
+            color: #ffffff;
+            padding: 120px 40px 40px;
+            z-index: 999;
+            transition: left 0.4s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        /* Lock body scroll when sidebar is open on mobile */
+        body.sidebar-open {
+            overflow: hidden;
+        }
+
+        @media (max-width: 968px) {
+            body.sidebar-open {
+                position: fixed;
+                width: 100%;
+            }
+        }
+
+        .sidebar-identity {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-identity h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-identity .role {
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: #b0b0b0;
+            line-height: 1.5;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            padding-top: 5px;
+        }
+
+        .sidebar-nav a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 400;
+            padding: 12px 0;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar-nav a:first-child {
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-nav a:last-child {
+            padding-top: 20px;
+        }
+
+        .sidebar-nav a:hover {
+            color: #b0b0b0;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 0;
+            min-height: 100vh;
+            padding: 100px 80px 80px;
+            transition: opacity 0.4s ease;
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            opacity: 0;
+        }
+
+        .page.active {
+            display: block;
+            animation: slideInFromRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Landing Page */
+        .landing-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .landing-page.slide-up {
+            transform: translateY(-100vh);
+        }
+
+        /* Geometric Background Elements */
+        .landing-page::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: rgba(200, 200, 200, 0.15);
+            border-radius: 50%;
+            top: -200px;
+            right: -100px;
+            z-index: 1;
+        }
+
+        .landing-page::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(180, 180, 180, 0.1);
+            transform: rotate(45deg);
+            bottom: -150px;
+            left: -100px;
+            z-index: 1;
+        }
+
+        .landing-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .landing-title {
+            font-size: 8rem;
+            font-weight: 700;
+            letter-spacing: -3px;
+            color: #4a4a4a;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .landing-subtitle {
+            font-size: 2rem;
+            font-weight: 500;
+            letter-spacing: 8px;
+            color: #666;
+            margin-bottom: 80px;
+        }
+
+        .enter-button {
+            position: relative;
+            z-index: 2;
+            padding: 16px 48px;
+            background: transparent;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            color: #333;
+            text-transform: uppercase;
+            overflow: hidden;
+        }
+
+        .enter-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: #333333;
+            transition: left 0.35s ease;
+            z-index: -1;
+        }
+
+        .enter-button:hover::before {
+            left: 0;
+        }
+
+        .enter-button:hover {
+            color: #ffffff;
+            border-color: #333;
+        }
+
+        /* Responsive Landing Page */
+        @media (max-width: 968px) {
+            .landing-title {
+                font-size: 5rem;
+            }
+
+            .landing-subtitle {
+                font-size: 1.5rem;
+                letter-spacing: 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .landing-title {
+                font-size: 3.5rem;
+                letter-spacing: -2px;
+            }
+
+            .landing-subtitle {
+                font-size: 1.2rem;
+                letter-spacing: 4px;
+                margin-bottom: 60px;
+            }
+
+            .enter-button {
+                padding: 14px 40px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Overview Page Animation from Bottom */
+        #overview-page {
+            transform: translateY(100vh);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #overview-page.slide-in {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Overview Page */
+        .overview-title {
+            font-size: 3.5rem;
+            font-weight: 600;
+            letter-spacing: -1.5px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .overview-description {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 700px;
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: #e0e0e0;
+            margin-bottom: 60px;
+        }
+
+        /* Domain Cards */
+        .domains-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .domain-card {
+            padding: 60px 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #ffffff;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .domain-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: #333333;
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .domain-card:hover::before {
+            left: 0;
+        }
+
+        .domain-card h2,
+        .domain-card p {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .domain-card:hover {
+            border-color: #333;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .domain-card:hover h2,
+        .domain-card:hover p {
+            color: #ffffff;
+        }
+
+        /* Active state for mobile touch */
+        .domain-card:active::before {
+            left: 0;
+        }
+
+        .domain-card:active h2,
+        .domain-card:active p {
+            color: #ffffff;
+        }
+
+        .domain-card h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        .domain-card p {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.7;
+        }
+
+        /* Inner Pages */
+        .inner-page-header {
+            margin-bottom: 40px;
+        }
+
+        .inner-page-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            letter-spacing: -1px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .inner-page-description {
+            font-size: 1rem;
+            color: #666;
+            max-width: 700px;
+            line-height: 1.8;
+        }
+
+        .showcase-container {
+            margin-bottom: 80px;
+        }
+
+        .showcase-placeholder {
+            padding: 40px;
+            border: 1px dashed #e0e0e0;
+            border-radius: 4px;
+            text-align: center;
+            color: #999;
+        }
+
+        /* Showcase Sub-domain */
+        .showcase-subdomain {
+            margin-bottom: 80px;
+        }
+
+        .showcase-subdomain:last-child {
+            margin-bottom: 0;
+        }
+
+        .subdomain-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 40px;
+            color: #222;
+        }
+
+        /* Showcase Item */
+        .showcase-item {
+            margin-bottom: 60px;
+            padding-bottom: 60px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .showcase-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .project-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 15px;
+            color: #222;
+        }
+
+        .project-title::before {
+            content: "- ";
+            color: #333;
+        }
+
+        .project-tags {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .project-tags span {
+            display: inline;
+        }
+
+        .tag-separator {
+            margin: 0 8px;
+            color: #999;
+        }
+
+        .tag-separator::before {
+            content: "|";
+        }
+
+        .project-visual {
+            margin-bottom: 25px;
+        }
+
+        .showcase-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            border: 1px solid #e0e0e0;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .showcase-image:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .project-description {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.8;
+            max-width: 800px;
+        }
+
+        /* Navigation */
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 40px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .page-indicator {
+            font-size: 0.85rem;
+            color: #999;
+            font-weight: 400;
+        }
+
+        .nav-button {
+            padding: 12px 28px;
+            background: transparent;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: #333333;
+            transition: left 0.35s ease;
+            z-index: -1;
+        }
+
+        .nav-button:hover::before {
+            left: 0;
+        }
+
+        .nav-button:hover {
+            color: #ffffff;
+            border-color: #333;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 100px;
+            padding: 50px 0;
+            background: #333333;
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-left: -80px;
+            margin-right: -80px;
+            margin-bottom: -80px;
+            padding-left: 80px;
+            padding-right: 80px;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .footer-item a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-item a:hover {
+            color: #b0b0b0;
+        }
+
+        .footer-copyright {
+            font-size: 0.85rem;
+            color: #b0b0b0;
+            font-weight: 300;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .main-content {
+                padding: 80px 40px 60px;
+            }
+
+            .domains-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .overview-title {
+                font-size: 2.8rem;
+            }
+
+            .inner-page-title {
+                font-size: 2rem;
+            }
+
+            .footer {
+                margin-left: -40px;
+                margin-right: -40px;
+                margin-bottom: -60px;
+                padding: 40px 40px;
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .footer-copyright {
+                align-self: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu-toggle {
+                top: 20px;
+                left: 20px;
+            }
+
+            .main-content {
+                padding: 70px 20px 40px;
+            }
+
+            .overview-title {
+                font-size: 2.2rem;
+            }
+
+            .inner-page-title {
+                font-size: 1.75rem;
+            }
+
+            .domain-card {
+                padding: 40px 30px;
+            }
+
+            .domain-card h2 {
+                font-size: 1.5rem;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .nav-left, .nav-right {
+                width: 100%;
+                align-items: flex-start;
+            }
+
+            .footer {
+                margin-left: -20px;
+                margin-right: -20px;
+                margin-bottom: -40px;
+                padding: 40px 20px;
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .footer-copyright {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div class="landing-page" id="landingPage">
+        <div class="landing-content">
+            <h1 class="landing-title">PORTFOLIO</h1>
+            <p class="landing-subtitle">Dava Berliano</p>
+        </div>
+        <button class="enter-button" id="enterButton">Enter</button>
+    </div>
+
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-identity">
+            <h1>Dava Berliano</h1>
+            <p class="role">Content Production Support | Digital Workflow Assistant</p>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" data-page="administration">Administration</a>
+            <a href="#" data-page="graphic-design">Graphic Design</a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Overview Page -->
+        <div class="page active" id="overview-page">
+            <h1 class="overview-title">Portfolio</h1>
+            <p class="overview-description">
+                This page presents a refined approach to organizational tasks and branding consistency in every project.
+            </p>
+            <div class="divider"></div>
+            
+            <div class="domains-container">
+                <div class="domain-card" data-page="administration">
+                    <h2>Administration</h2>
+                    <p>Integrated display of systematic data management and strategic visual communication.</p>
+                </div>
+                <div class="domain-card" data-page="graphic-design">
+                    <h2>Graphic Design</h2>
+                    <p>Systematic approach to visual identity development through structured design methodology.</p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <div class="footer-content">
+                    <div class="footer-item">
+                        <svg class="footer-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        <a href="mailto:meprodin@gmail.com">meprodin@gmail.com</a>
+                    </div>
+                    <div class="footer-item">
+                        <svg class="footer-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        </svg>
+                        <a href="https://wa.me/6285702599180">+6285-702-599-180</a>
+                    </div>
+                </div>
+                <div class="footer-copyright">© 2025 Dava Berliano</div>
+            </div>
+        </div>
+
+        <!-- Administration Page -->
+        <div class="page" id="administration-page">
+            <div class="inner-page-header">
+                <h1 class="inner-page-title">Administration</h1>
+                <p class="inner-page-description">
+                    A showcase of projects focused on precise data entry, organized documentation, and comprehensive spreadsheet analysis.
+                </p>
+            </div>
+            <div class="divider"></div>
+            
+            <div class="showcase-container">
+                <!-- Sub-domain 1: Data Management and Data Entry -->
+                <div class="showcase-subdomain">
+                    <h2 class="subdomain-title">Data Management and Data Entry</h2>
+                    
+                    <!-- Showcase Item 1 -->
+                    <div class="showcase-item">
+                        <h3 class="project-title">Technical Data Inventory Hardware Specifications</h3>
+                        <div class="project-tags">
+                            <span>Database Management</span><span class="tag-separator"></span>
+                            <span>Data Entry</span><span class="tag-separator"></span>
+                            <span>Information Architecture</span>
+                        </div>
+                        <div class="project-visual">
+                            <img src="images/admin-data-1.png" alt="Technical Data Inventory Hardware Specifications" class="showcase-image">
+                        </div>
+                        <p class="project-description">
+                            This project involved organizing hardware specifications into a structured database through rigorous format validation to ensure data accuracy. By applying industry-standard naming conventions, the dataset was optimized for efficient search and navigation, providing a reliable reference for operational and business analysis needs.
+                        </p>
+                    </div>
+
+                    <!-- Showcase Item 2 -->
+                    <div class="showcase-item">
+                        <h3 class="project-title">Strategic Sales Performance Analysis and Revenue Realization Dashboard</h3>
+                        <div class="project-tags">
+                            <span>Data Analytics</span><span class="tag-separator"></span>
+                            <span>Sales Strategy</span><span class="tag-separator"></span>
+                            <span>Performance Dashboard</span>
+                        </div>
+                        <div class="project-visual">
+                            <img src="images/admin-data-2.png" alt="Strategic Sales Performance Analysis and Revenue Realization Dashboard" class="showcase-image">
+                        </div>
+                        <p class="project-description">
+                            This project involved developing a sales performance dashboard to track regional targets and revenue realization. By implementing automated status indicators, the dataset provides strategic insights into representative productivity. The integration of dynamic visuals ensures a reliable reference for data-driven management decisions.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sub-domain 2: Documentation and Reporting -->
+                <div class="showcase-subdomain">
+                    <h2 class="subdomain-title">Documentation and Reporting</h2>
+                    
+                    <!-- Showcase Item 1 -->
+                    <div class="showcase-item">
+                        <h3 class="project-title">Corporate Documentation and Technical Reporting</h3>
+                        <div class="project-tags">
+                            <span>Administration</span><span class="tag-separator"></span>
+                            <span>Technical Writing</span><span class="tag-separator"></span>
+                            <span>Data Archiving</span>
+                        </div>
+                        <div class="project-visual">
+                            <img src="images/admin-doc-1.png" alt="Corporate Documentation and Technical Reporting" class="showcase-image">
+                        </div>
+                        <p class="project-description">
+                            Managed internal corporate reporting for the AMBATECH Editorial Division, focusing on AI technology transitions. The project ensures high-level information accuracy through structured multimodal protocols. Implementation of advanced data encryption secures the credibility and confidentiality of all journalistic assets.
+                        </p>
+                    </div>
+
+                    <!-- Showcase Item 2 -->
+                    <div class="showcase-item">
+                        <h3 class="project-title">Comprehensive Regional Restoration Audit and Data Archiving</h3>
+                        <div class="project-tags">
+                            <span>Administrative Officer</span><span class="tag-separator"></span>
+                            <span>Operational Reporting</span><span class="tag-separator"></span>
+                            <span>Data Validation</span><span class="tag-separator"></span>
+                            <span>Archive Management</span>
+                        </div>
+                        <div class="project-visual">
+                            <img src="images/admin-doc-2.png" alt="Comprehensive Regional Restoration Audit and Data Archiving" class="showcase-image">
+                        </div>
+                        <p class="project-description">
+                            Managed administrative documentation for the land rehabilitation program across several Indonesian regions, ensuring structured auditing of seedling efficiency and coordinate mapping. The project involved tracking restoration achievements and maintaining high-level data accuracy through formal archiving codes. Integration of inter-departmental verification protocols ensures the credibility of the annual fiscal reports for executive review.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-container">
+                <div class="nav-left">
+                    <button class="nav-button" data-page="overview">Back</button>
+                    <div class="page-indicator">Administration</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphic Design Page -->
+        <div class="page" id="graphic-design-page">
+            <div class="inner-page-header">
+                <h1 class="inner-page-title">Graphic Design</h1>
+                <p class="inner-page-description">
+                    A showcase of creative works focused on engaging visual identities, social media graphics, and polished layout designs.
+                </p>
+            </div>
+            <div class="divider"></div>
+            
+            <div class="showcase-container">
+                <!-- Sub-domain 1: Marketing and Promotional Design -->
+                <div class="showcase-subdomain">
+                    <h2 class="subdomain-title">Marketing and Promotional Design</h2>
+                    
+                    <!-- Showcase Item 1 -->
+                    <div class="showcase-item">
+                        <h3 class="project-title">Action Figure Product Launch Poster</h3>
+                        <div class="project-tags">
+                            <span>Visual Identity</span><span class="tag-separator"></span>
+                            <span>Product Identity Design</span><span class="tag-separator"></span>
+                            <span>Promotional Campaign</span>
+                        </div>
+                        <div class="project-visual">
+                            <img src="images/design-marketing-1.jpg" alt="Action Figure Product Launch Poster" class="showcase-image">
+                        </div>
+                        <p class="project-description">
+                            This project involved crafting the Oguri Cap product identity to define a distinct brand presence through structured visual storytelling. By aligning a minimalist layout with the figure's dynamic aesthetic, the design highlights intricate product details while maintaining a premium feel. This curation serves as a key tool for strengthening market identity and ensuring a professional presentation of the collection.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sub-domain 2: Visual Communication and Layout Design -->
+                <div class="showcase-subdomain">
+                    <h2 class="subdomain-title">Visual Communication and Layout Design</h2>
+                    
+                    <!-- Showcase Item 1 -->
+                    <div class="showcase-item">
+                        <h3 class="project-title">Linekia Catalog Curation and Product Identity Design</h3>
+                        <div class="project-tags">
+                            <span>Visual Identity</span><span class="tag-separator"></span>
+                            <span>Digital Catalog</span><span class="tag-separator"></span>
+                            <span>Linekia Project</span>
+                        </div>
+                        <div class="project-visual">
+                            <img src="images/design-visual-1.jpg" alt="Linekia Catalog Curation and Product Identity Design" class="showcase-image">
+                        </div>
+                        <p class="project-description">
+                            This project involved crafting the Linekia product catalog to define a distinct brand presence through structured visual storytelling. By aligning a minimalist layout with Linekia's furniture aesthetic, the design highlights product details while maintaining a premium feel. This curation serves as a key tool for client engagement and strengthening Linekia's market identity.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-container">
+                <div class="nav-left">
+                    <button class="nav-button" data-page="overview">Back</button>
+                    <div class="page-indicator">Graphic Design</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Landing Page Enter Animation
+        const landingPage = document.getElementById('landingPage');
+        const enterButton = document.getElementById('enterButton');
+        const overviewPage = document.getElementById('overview-page');
+
+        // Disable scroll on landing page
+        document.body.classList.add('landing-active');
+
+        enterButton.addEventListener('click', () => {
+            landingPage.classList.add('slide-up');
+            overviewPage.classList.add('slide-in');
+            document.body.classList.remove('landing-active');
+            
+            // Remove landing page after animation completes
+            setTimeout(() => {
+                landingPage.style.display = 'none';
+            }, 800);
+        });
+
+        // Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.classList.toggle('sidebar-open');
+        });
+
+        overlay.addEventListener('click', () => {
+            menuToggle.classList.remove('active');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.classList.remove('sidebar-open');
+        });
+
+        // Page Navigation
+        const pages = document.querySelectorAll('.page');
+        const navLinks = document.querySelectorAll('[data-page]');
+
+        function showPage(pageId) {
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            const targetPage = document.getElementById(pageId + '-page');
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            // Close sidebar after navigation
+            menuToggle.classList.remove('active');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.classList.remove('sidebar-open');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Add click handlers to all navigation elements
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = link.getAttribute('data-page');
+                showPage(pageId);
+            });
+        });
+    </script>
+</body>
+</html>
