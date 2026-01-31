@@ -194,7 +194,7 @@
             left: 0;
             width: 100%;
             height: 100vh;
-            background: #f5f5f5;
+            background: #ffffff;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -208,29 +208,49 @@
             transform: translateY(-100vh);
         }
 
-        /* Geometric Background Elements */
+        /* Geometric Background Elements with Animation */
         .landing-page::before {
             content: '';
             position: absolute;
-            width: 600px;
-            height: 600px;
-            background: rgba(200, 200, 200, 0.15);
-            border-radius: 50%;
-            top: -200px;
-            right: -100px;
+            width: 450px;
+            height: 450px;
+            background: linear-gradient(135deg, rgba(80, 80, 80, 0.18), rgba(60, 60, 60, 0.12));
+            transform: rotate(25deg);
+            top: -180px;
+            right: -120px;
             z-index: 1;
+            animation: squareFloat1 18s ease-in-out infinite;
         }
 
         .landing-page::after {
             content: '';
             position: absolute;
-            width: 400px;
-            height: 400px;
-            background: rgba(180, 180, 180, 0.1);
+            width: 380px;
+            height: 380px;
+            background: linear-gradient(45deg, rgba(100, 100, 100, 0.16), rgba(70, 70, 70, 0.11));
             transform: rotate(45deg);
             bottom: -150px;
             left: -100px;
             z-index: 1;
+            animation: squareFloat2 22s ease-in-out infinite;
+        }
+
+        @keyframes squareFloat1 {
+            0%, 100% {
+                transform: rotate(25deg) translateY(0) translateX(0);
+            }
+            50% {
+                transform: rotate(45deg) translateY(-30px) translateX(20px);
+            }
+        }
+
+        @keyframes squareFloat2 {
+            0%, 100% {
+                transform: rotate(45deg) translateY(0) translateX(0);
+            }
+            50% {
+                transform: rotate(65deg) translateY(35px) translateX(-15px);
+            }
         }
 
         .landing-content {
@@ -325,15 +345,55 @@
             }
         }
 
-        /* Overview Page Animation from Bottom */
+        /* Overview Page Animation - Optimized for Seamless Performance */
         #overview-page {
-            transform: translateY(100vh);
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+            transform: scale(0.65) translate3d(0, 0, 0);
+            opacity: 0;
+            transform-origin: center center;
+            will-change: transform, opacity;
+            -webkit-transform: scale(0.65) translate3d(0, 0, 0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            perspective: 1000px;
         }
 
-        #overview-page.slide-in {
-            transform: translateY(0);
-            opacity: 1;
+        #overview-page.zoom-active {
+            display: block;
+            animation: optimizedZoomFromDepth 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes optimizedZoomFromDepth {
+            0% {
+                transform: scale(0.65) translate3d(0, 0, 0);
+                -webkit-transform: scale(0.65) translate3d(0, 0, 0);
+                opacity: 0;
+                filter: blur(8px);
+            }
+            25% {
+                transform: scale(0.78) translate3d(0, 0, 0);
+                -webkit-transform: scale(0.78) translate3d(0, 0, 0);
+                opacity: 0.35;
+                filter: blur(5px);
+            }
+            50% {
+                transform: scale(0.88) translate3d(0, 0, 0);
+                -webkit-transform: scale(0.88) translate3d(0, 0, 0);
+                opacity: 0.65;
+                filter: blur(2px);
+            }
+            75% {
+                transform: scale(0.95) translate3d(0, 0, 0);
+                -webkit-transform: scale(0.95) translate3d(0, 0, 0);
+                opacity: 0.88;
+                filter: blur(0.5px);
+            }
+            100% {
+                transform: scale(1) translate3d(0, 0, 0);
+                -webkit-transform: scale(1) translate3d(0, 0, 0);
+                opacity: 1;
+                filter: blur(0);
+            }
         }
 
         /* Overview Page */
@@ -648,6 +708,7 @@
         .footer-item a {
             color: #ffffff;
             text-decoration: none;
+            font-weight: 300;
             transition: color 0.3s ease;
         }
 
@@ -780,7 +841,7 @@
     <!-- Main Content -->
     <main class="main-content">
         <!-- Overview Page -->
-        <div class="page active" id="overview-page">
+        <div class="page" id="overview-page">
             <h1 class="overview-title">Portfolio</h1>
             <p class="overview-description">
                 This page presents a refined approach to organizational tasks and branding consistency in every project.
@@ -982,18 +1043,44 @@
         const enterButton = document.getElementById('enterButton');
         const overviewPage = document.getElementById('overview-page');
 
+        // Track if user has entered overview for the first time
+        let isFirstOverviewEntry = true;
+
         // Disable scroll on landing page
         document.body.classList.add('landing-active');
 
         enterButton.addEventListener('click', () => {
-            landingPage.classList.add('slide-up');
-            overviewPage.classList.add('slide-in');
-            document.body.classList.remove('landing-active');
+            // Disable button to prevent double click
+            enterButton.disabled = true;
             
-            // Remove landing page after animation completes
-            setTimeout(() => {
-                landingPage.style.display = 'none';
-            }, 800);
+            // Use requestAnimationFrame to ensure smooth animation start
+            requestAnimationFrame(() => {
+                // Start landing page fade out
+                landingPage.style.transition = 'opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                landingPage.style.opacity = '0';
+                
+                // Trigger overview zoom in next frame for optimal rendering
+                requestAnimationFrame(() => {
+                    overviewPage.classList.add('zoom-active');
+                    isFirstOverviewEntry = false;
+                });
+                
+                // Slide up landing page with slight delay
+                setTimeout(() => {
+                    requestAnimationFrame(() => {
+                        landingPage.style.transition = 'transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
+                        landingPage.style.transform = 'translateY(-100vh)';
+                        document.body.classList.remove('landing-active');
+                    });
+                }, 250);
+                
+                // Clean up landing page after animations complete
+                setTimeout(() => {
+                    landingPage.style.display = 'none';
+                    landingPage.style.willChange = 'auto';
+                    overviewPage.style.willChange = 'auto';
+                }, 1000);
+            });
         });
 
         // Menu Toggle
@@ -1021,12 +1108,27 @@
 
         function showPage(pageId) {
             pages.forEach(page => {
-                page.classList.remove('active');
+                page.classList.remove('active', 'zoom-active');
+                // Reset overview page if switching away from it
+                if (page.id === 'overview-page' && pageId !== 'overview') {
+                    page.style.display = 'none';
+                }
             });
             
             const targetPage = document.getElementById(pageId + '-page');
             if (targetPage) {
-                targetPage.classList.add('active');
+                if (pageId === 'overview') {
+                    targetPage.style.display = 'block';
+                    // Use zoom animation only for first entry, slide for returning
+                    if (isFirstOverviewEntry) {
+                        targetPage.classList.add('zoom-active');
+                    } else {
+                        targetPage.classList.add('active');
+                    }
+                } else {
+                    // Other pages use active class with slide animation
+                    targetPage.classList.add('active');
+                }
             }
 
             // Close sidebar after navigation
